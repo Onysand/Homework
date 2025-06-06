@@ -5,6 +5,7 @@ import { Eye, Download, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import type { UploadedFile } from "@/types/file"
+import Image from "next/image";
 
 interface FilePreviewProps {
   file: UploadedFile
@@ -29,7 +30,7 @@ export function FilePreview({ file }: FilePreviewProps) {
   const renderPreview = () => {
     if (file.type.startsWith("image/")) {
       return (
-          <img
+          <Image
               src={file.url || "/placeholder.svg"}
               alt={file.name}
               className="max-w-full max-h-96 object-contain rounded-lg"
