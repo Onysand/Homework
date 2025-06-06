@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, X, File, ImageIcon, Video, Music, AlertCircle, CheckCircle } from "lucide-react"
+import { Upload, X, File, ImageIcon, Video, Music, AlertCircle, CheckCircle, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -11,8 +11,13 @@ import { uploadToBlob } from "@/lib/upload"
 import { formatFileSize } from "@/lib/utils"
 import type { UploadedFile } from "@/types/file"
 
+interface ExtendedUploadedFile extends UploadedFile {
+  fallback?: boolean
+  message?: string
+}
+
 export function FileUpload() {
-  const [files, setFiles] = useState<UploadedFile[]>([])
+  const [files, setFiles] = useState<ExtendedUploadedFile[]>([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -32,8 +37,7 @@ export function FileUpload() {
         const uploadedFile = await uploadToBlob(file, (progress) => {
           setUploadProgress((prev) => {
             const newProgress = prev + progress / acceptedFiles.length
-            console.log(`Upload progress: ${newProgress}%`)
-            return newProgress
+            return Math.min(newProgress, 100)
           })
         })
 
@@ -46,12 +50,21 @@ export function FileUpload() {
           type: file.type,
           url: uploadedFile.url,
           uploadedAt: new Date(),
+          fallback: uploadedFile.fallback,
+          message: uploadedFile.message,
         }
       })
 
       const uploadedFiles = await Promise.all(uploadPromises)
       setFiles((prev) => [...prev, ...uploadedFiles])
-      setSuccess(`Successfully uploaded ${uploadedFiles.length} file(s)`)
+
+      const fallbackCount = uploadedFiles.filter((f) => f.fallback).length
+      if (fallbackCount > 0) {
+        setSuccess(`Uploaded ${uploadedFiles.length} file(s) (${fallbackCount} using temporary storage)`)
+      } else {
+        setSuccess(`Successfully uploaded ${uploadedFiles.length} file(s)`)
+      }
+
       console.log("All files uploaded successfully")
     } catch (error) {
       console.error("Upload failed:", error)
@@ -100,11 +113,6 @@ export function FileUpload() {
             </h3>
             <p className="text-gray-400 mb-4">Drag & drop files here, or click to select files</p>
             <p className="text-sm text-gray-500">Maximum file size: 50MB</p>
-
-            {/* Debug info */}
-            <div className="mt-4 text-xs text-gray-600">
-              <p>Debug: Click here or drag files to test upload</p>
-            </div>
           </div>
         </Card>
 
@@ -167,11 +175,17 @@ export function FileUpload() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="text-gray-400">{getFileIcon(file.type)}</div>
-                          <div>
+                          <div className="flex-1">
                             <p className="text-white font-medium">{file.name}</p>
                             <p className="text-sm text-gray-400">
                               {formatFileSize(file.size)} • {file.uploadedAt.toLocaleDateString()}
                             </p>
+                            {file.fallback && (
+                                <div className="flex items-center space-x-1 mt-1">
+                                  <Info className="h-3 w-3 text-yellow-400" />
+                                  <p className="text-xs text-yellow-400">{file.message}</p>
+                                </div>
+                            )}
                             <p className="text-xs text-gray-500 truncate max-w-md">{file.url}</p>
                           </div>
                         </div>
