@@ -49,7 +49,7 @@ export function FileUpload() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: true,
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 50 * 1024 * 1024, // 50MB
   })
 
   const removeFile = (id: number) => {
@@ -64,70 +64,70 @@ export function FileUpload() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Upload Zone */}
-      <Card className={`border-2 border-dashed border-gray-700 bg-gray-900/50 backdrop-blur-sm ${
-            isDragActive ? "border-white bg-gray-800/50" : "hover:border-gray-600 hover:bg-gray-800/30"
-      } duration-300`}>
-        <div
-          {...getRootProps()}
-          className={`p-12 text-center cursor-pointer transition-colors`}
-        >
-          <input {...getInputProps()} />
-          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">
-            {isDragActive ? "Drop files here" : "Upload your files"}
-          </h3>
-          <p className="text-gray-400 mb-4">Drag & drop files here, or click to select files</p>
-          <p className="text-sm text-gray-500">Maximum file size: 5MB</p>
-        </div>
-      </Card>
-
-      {/* Upload Progress */}
-      {uploading && (
-        <Card className="bg-gray-900/50 border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white font-medium">Uploading files...</span>
-            <span className="text-gray-400">{Math.round(uploadProgress)}%</span>
+      <div className="space-y-8">
+        {/* Upload Zone */}
+        <Card className="border-2 border-dashed border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+          <div
+              {...getRootProps()}
+              className={`p-12 text-center cursor-pointer transition-colors ${
+                  isDragActive ? "border-white bg-gray-800/50" : "hover:border-gray-600 hover:bg-gray-800/30"
+              }`}
+          >
+            <input {...getInputProps()} />
+            <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">
+              {isDragActive ? "Drop files here" : "Upload your files"}
+            </h3>
+            <p className="text-gray-400 mb-4">Drag & drop files here, or click to select files</p>
+            <p className="text-sm text-gray-500">Maximum file size: 50MB</p>
           </div>
-          <Progress value={uploadProgress} className="h-2" />
         </Card>
-      )}
 
-      {/* Uploaded Files */}
-      {files.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-2xl font-bold text-white">Uploaded Files</h3>
-          <div className="grid gap-4">
-            {files.map((file) => (
-              <Card key={file.id} className="bg-gray-900/50 border-gray-700 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-gray-400">{getFileIcon(file.type)}</div>
-                    <div>
-                      <p className="text-white font-medium">{file.name}</p>
-                      <p className="text-sm text-gray-400">
-                        {formatFileSize(file.size)} • {file.uploadedAt.toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FilePreview file={file} />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(file.id)}
-                      className="text-gray-400 hover:text-red-400"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+        {/* Upload Progress */}
+        {uploading && (
+            <Card className="bg-gray-900/50 border-gray-700 p-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-white font-medium">Uploading files...</span>
+                <span className="text-gray-400">{Math.round(uploadProgress)}%</span>
+              </div>
+              <Progress value={uploadProgress} className="h-2" />
+            </Card>
+        )}
+
+        {/* Uploaded Files */}
+        {files.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-white">Uploaded Files</h3>
+              <div className="grid gap-4">
+                {files.map((file) => (
+                    <Card key={file.id} className="bg-gray-900/50 border-gray-700 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="text-gray-400">{getFileIcon(file.type)}</div>
+                          <div>
+                            <p className="text-white font-medium">{file.name}</p>
+                            <p className="text-sm text-gray-400">
+                              {formatFileSize(file.size)} • {file.uploadedAt.toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <FilePreview file={file} />
+                          <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(file.id)}
+                              className="text-gray-400 hover:text-red-400"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                ))}
+              </div>
+            </div>
+        )}
+      </div>
   )
 }
