@@ -4,15 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec144240-0b44-436f-bea3-2a57ed013209" name="Changes" comment="sdasdassda">
+    <list default="true" id="ec144240-0b44-436f-bea3-2a57ed013209" name="Changes" comment="FIXX">
+      <change afterPath="$PROJECT_DIR$/src/app/api/upload/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/upload-test.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/postcss.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/postcss.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/file-upload.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/file-upload.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="PUSH_AUTO_UPDATE" value="true" />
@@ -83,6 +93,7 @@
     <MESSAGE value="s" />
     <MESSAGE value="фывфыв" />
     <MESSAGE value="sdasdassda" />
-    <option name="LAST_COMMIT_MESSAGE" value="sdasdassda" />
+    <MESSAGE value="FIXX" />
+    <option name="LAST_COMMIT_MESSAGE" value="FIXX" />
   </component>
 </project>

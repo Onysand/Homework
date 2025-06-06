@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, X, File, ImageIcon, Video, Music } from "lucide-react"
+import { Upload, X, File, ImageIcon, Video, Music, AlertCircle, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -15,16 +15,29 @@ export function FileUpload() {
   const [files, setFiles] = useState<UploadedFile[]>([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    console.log("Files dropped:", acceptedFiles)
     setUploading(true)
     setUploadProgress(0)
+    setError(null)
+    setSuccess(null)
 
     try {
       const uploadPromises = acceptedFiles.map(async (file, index) => {
+        console.log(`Uploading file ${index + 1}:`, file.name)
+
         const uploadedFile = await uploadToBlob(file, (progress) => {
-          setUploadProgress((prev) => prev + progress / acceptedFiles.length)
+          setUploadProgress((prev) => {
+            const newProgress = prev + progress / acceptedFiles.length
+            console.log(`Upload progress: ${newProgress}%`)
+            return newProgress
+          })
         })
+
+        console.log("File uploaded successfully:", uploadedFile.url)
 
         return {
           id: Date.now() + index,
@@ -38,18 +51,25 @@ export function FileUpload() {
 
       const uploadedFiles = await Promise.all(uploadPromises)
       setFiles((prev) => [...prev, ...uploadedFiles])
+      setSuccess(`Successfully uploaded ${uploadedFiles.length} file(s)`)
+      console.log("All files uploaded successfully")
     } catch (error) {
       console.error("Upload failed:", error)
+      setError(error instanceof Error ? error.message : "Upload failed")
     } finally {
       setUploading(false)
       setUploadProgress(0)
     }
   }, [])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
     multiple: true,
     maxSize: 50 * 1024 * 1024, // 50MB
+    onError: (error) => {
+      console.error("Dropzone error:", error)
+      setError("File selection failed")
+    },
   })
 
   const removeFile = (id: number) => {
@@ -80,8 +100,51 @@ export function FileUpload() {
             </h3>
             <p className="text-gray-400 mb-4">Drag & drop files here, or click to select files</p>
             <p className="text-sm text-gray-500">Maximum file size: 50MB</p>
+
+            {/* Debug info */}
+            <div className="mt-4 text-xs text-gray-600">
+              <p>Debug: Click here or drag files to test upload</p>
+            </div>
           </div>
         </Card>
+
+        {/* File Rejections */}
+        {fileRejections.length > 0 && (
+            <Card className="bg-red-900/20 border-red-700 p-4">
+              <div className="flex items-center space-x-2 text-red-400">
+                <AlertCircle className="h-5 w-5" />
+                <span className="font-medium">Some files were rejected:</span>
+              </div>
+              <ul className="mt-2 text-sm text-red-300">
+                {fileRejections.map(({ file, errors }) => (
+                    <li key={file.name}>
+                      {file.name}: {errors.map((e) => e.message).join(", ")}
+                    </li>
+                ))}
+              </ul>
+            </Card>
+        )}
+
+        {/* Error Message */}
+        {error && (
+            <Card className="bg-red-900/20 border-red-700 p-4">
+              <div className="flex items-center space-x-2 text-red-400">
+                <AlertCircle className="h-5 w-5" />
+                <span className="font-medium">Upload Error:</span>
+              </div>
+              <p className="mt-1 text-red-300">{error}</p>
+            </Card>
+        )}
+
+        {/* Success Message */}
+        {success && (
+            <Card className="bg-green-900/20 border-green-700 p-4">
+              <div className="flex items-center space-x-2 text-green-400">
+                <CheckCircle className="h-5 w-5" />
+                <span className="font-medium">{success}</span>
+              </div>
+            </Card>
+        )}
 
         {/* Upload Progress */}
         {uploading && (
@@ -97,7 +160,7 @@ export function FileUpload() {
         {/* Uploaded Files */}
         {files.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold text-white">Uploaded Files</h3>
+              <h3 className="text-2xl font-bold text-white">Uploaded Files ({files.length})</h3>
               <div className="grid gap-4">
                 {files.map((file) => (
                     <Card key={file.id} className="bg-gray-900/50 border-gray-700 p-4">
@@ -109,6 +172,7 @@ export function FileUpload() {
                             <p className="text-sm text-gray-400">
                               {formatFileSize(file.size)} • {file.uploadedAt.toLocaleDateString()}
                             </p>
+                            <p className="text-xs text-gray-500 truncate max-w-md">{file.url}</p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">

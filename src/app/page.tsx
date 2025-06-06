@@ -2,6 +2,7 @@
 
 import { FileUpload } from "@/components/file-upload"
 import { Header } from "@/components/header"
+import { UploadTest } from "@/components/upload-test"
 
 export default function HomePage() {
     return (
@@ -15,6 +16,7 @@ export default function HomePage() {
                             Securely upload and manage your files with our powerful platform. Drag & drop or click to select files.
                         </p>
                     </div>
+                    <UploadTest />
                     <FileUpload />
                 </div>
             </main>
